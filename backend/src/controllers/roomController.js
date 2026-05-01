@@ -1,48 +1,18 @@
-const Room = require('../models/Room');
+const roomService = require('../services/roomService');
+const asyncHandler = require('../utils/asyncHandler');
 
 // Récupérer toutes les salles
-const getAllRooms = async (req, res) => {
-    try {
-        const rooms = await Room.getAll();
-        res.status(200).json(rooms);
-    } catch (error) {
-        console.error("ERREUR SQL :", error);
-        res.status(500).json({ message: "Erreur lors de la récupération des salles" });
-    }
-};
+const getAllRooms = asyncHandler(async (req, res) => {
+    const rooms = await roomService.getAllRooms();
+    res.status(200).json(rooms);
+});
 
 // Récupérer les détails d'une salle (avec sa galerie) - VERSION OPTIMISÉE (2 requêtes lancées en parallèle)
-const getRoomDetails = async (req, res) => {
-    try {
-        const { id } = req.params;
-
-        // 1. On récupère les infos de base
-        const room = await Room.getById(id);
-
-        if (!room) {
-            return res.status(404).json({ message: "Salle introuvable" });
-        }
-
-        // 2. On récupère en parallèle les photos et équipements
-        const [photos, equipments] = await Promise.all([
-            Room.getPhotos(id),
-            Room.getEquipments(id)
-        ]);
-
-        // 3. On fusionne tout dans un seul objet
-        const fullRoomData = {
-            ...room,
-            galerie: photos.map(p => p.url), // On simplifie pour n'avoir qu'un tableau de strings
-            equipements: equipments.map(e => e.nom)
-        };
-
-        res.status(200).json(fullRoomData);
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Erreur lors de la récupération des détails" });
-    }
-};
+const getRoomDetails = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const fullRoomData = await roomService.getRoomDetails(id);
+    res.status(200).json(fullRoomData);
+});
 // Détail d'une salle avec sa galerie
 // const getRoomDetails = async (req, res) => {
 //     try {
@@ -69,17 +39,10 @@ const getRoomDetails = async (req, res) => {
 // };
 
 // Création d'une salle (Admin)
-const createRoom = async (req, res) => {
-    try {
-        const { photos, ...roomData } = req.body; // On sépare les photos du reste des données
-
-        const newRoomId = await Room.create(roomData, photos);
-        res.status(201).json({ id: newRoomId, ...roomData, photos });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Erreur lors de la création de la salle" });
-    }
-};
+const createRoom = asyncHandler(async (req, res) => {
+    const createdRoom = await roomService.createRoom(req.body);
+    res.status(201).json(createdRoom);
+});
 
 module.exports = {
     getAllRooms,

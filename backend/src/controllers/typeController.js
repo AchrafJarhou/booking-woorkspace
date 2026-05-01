@@ -1,67 +1,38 @@
-const Type = require('../models/Type');
+const typeService = require('../services/typeService');
+const asyncHandler = require('../utils/asyncHandler');
 
 // Récupérer tous les types
-const getAllTypes = async (req, res) => {
-    try {
-        const types = await Type.findAll();
-        res.status(200).json(types);
-    } catch (error) {
-        console.error("ERREUR SQL :", error);
-        res.status(500).json({ message: "Erreur lors de la récupération des types" });
-    }
-};
+const getAllTypes = asyncHandler(async (req, res) => {
+    const types = await typeService.getAllTypes();
+    res.status(200).json(types);
+});
 
 // Récupérer les détails d'un type
-const getTypeDetails = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const type = await Type.findById(id);
-
-        if (!type) {
-            return res.status(404).json({ message: "type introuvable" });
-        }
-
-        res.status(200).json(type);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Erreur lors de la récupération des détails" });
-    }
-};
+const getTypeDetails = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const type = await typeService.getTypeById(id);
+    res.status(200).json(type);
+});
 
 // créée un nouvel type
-const createType = async (req, res) => {
-    try {
-        const typeId = await Type.create(req.body);
-        res.status(201).json({ id: typeId, message: "type créé avec succès" });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Erreur lors de la création de l'type" });
-    }
-};
+const createType = asyncHandler(async (req, res) => {
+    const typeId = await typeService.createType(req.body);
+    res.status(201).json({ id: typeId, message: "type cree avec succes" });
+});
 
 // modification d'un type
-const updateType = async (req, res) => {
-    try {
-        const { id } = req.params;
-        await Type.update(id, req.body);
-        res.status(200).json({ message: "type mis à jour avec succès" });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Erreur lors de la mise à jour de l'type" });
-    }
-};
+const updateType = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    await typeService.updateType(id, req.body);
+    res.status(200).json({ message: "type mis a jour avec succes" });
+});
 
 // suppression d'un type
-const deleteType = async (req, res) => {
-    try {
-        const { id } = req.params;
-        await Type.delete(id);
-        res.status(200).json({ message: "Utilisateur supprimé avec succès" });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Erreur lors de la suppression de l'utilisateur" });
-    }
-};
+const deleteType = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    await typeService.deleteType(id);
+    res.status(200).json({ message: "type supprime avec succes" });
+});
 
 
 module.exports = {

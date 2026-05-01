@@ -1,67 +1,38 @@
-const User = require('../models/User');
+const userService = require('../services/userService');
+const asyncHandler = require('../utils/asyncHandler');
 
 // Récupérer tous les utilisateurs
-const getAllUsers = async (req, res) => {
-    try {
-        const users = await User.findAll();
-        res.status(200).json(users);
-    } catch (error) {
-        console.error("ERREUR SQL :", error);
-        res.status(500).json({ message: "Erreur lors de la récupération des utilisateurs" });
-    }
-};
+const getAllUsers = asyncHandler(async (req, res) => {
+    const users = await userService.getAllUsers();
+    res.status(200).json(users);
+});
 
 // Récupérer les détails d'un utilisateur
-const getUserDetails = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const user = await User.findById(id);
-
-        if (!user) {
-            return res.status(404).json({ message: "Utilisateur introuvable" });
-        }
-
-        res.status(200).json(user);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Erreur lors de la récupération des détails" });
-    }
-};
+const getUserDetails = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const user = await userService.getUserById(id);
+    res.status(200).json(user);
+});
 
 // créée un nouvel utilisateur
-const createUser = async (req, res) => {
-    try {
-        const userId = await User.create(req.body);
-        res.status(201).json({ id: userId, message: "Utilisateur créé avec succès" });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Erreur lors de la création de l'utilisateur" });
-    }
-};
+const createUser = asyncHandler(async (req, res) => {
+    const userId = await userService.createUser(req.body);
+    res.status(201).json({ id: userId, message: "utilisateur cree avec succes" });
+});
 
 // modification d'un utilisateur
-const updateUser = async (req, res) => {
-    try {
-        const { id } = req.params;
-        await User.update(id, req.body);
-        res.status(200).json({ message: "Utilisateur mis à jour avec succès" });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Erreur lors de la mise à jour de l'utilisateur" });
-    }
-};
+const updateUser = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    await userService.updateUser(id, req.body);
+    res.status(200).json({ message: "utilisateur mis a jour avec succes" });
+});
 
 // suppression d'un utilisateur
-const deleteUser = async (req, res) => {
-    try {
-        const { id } = req.params;
-        await User.delete(id);
-        res.status(200).json({ message: "Utilisateur supprimé avec succès" });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Erreur lors de la suppression de l'utilisateur" });
-    }
-};
+const deleteUser = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    await userService.deleteUser(id);
+    res.status(200).json({ message: "utilisateur supprime avec succes" });
+});
 
 
 module.exports = {
