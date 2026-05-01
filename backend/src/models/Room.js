@@ -110,6 +110,67 @@ class Room extends BaseModel {
             connection.release();
         }
     }
+
+    // Récupère les salles disponibles à une date donnée avec filtres optionnels
+    // Ne retourne que les salles sans réservation chevauchant cette date
+    static async getAvailableByDate(date, filters = {}) {
+        let sql = `
+            SELECT DISTINCT s.*, t.nom as type_nom 
+            FROM salles s
+            JOIN types t ON s.type_id = t.id
+            WHERE s.statut = 'disponible'
+            AND s.id NOT IN (
+                SELECT salle_id FROM reservations 
+                WHERE DATE(date) = ? AND statut != 'annulee'
+            )
+        `;
+        const params = [date];
+
+        // Filtres optionnels
+        if (filters.ville) {
+            sql += ' AND s.ville = ?';
+            params.push(filters.ville);
+        }
+        if (filters.capacite_min) {
+            sql += ' AND s.capacite >= ?';
+            params.push(filters.capacite_min);
+        }
+        if (filters.type_id) {
+            sql += ' AND s.type_id = ?';
+            params.push(filters.type_id);
+        }
+
+        const [rows] = await db.execute(sql, params);
+        return rows;
+    }
+
+    // Ajoute des équipements à une salle
+    static async linkEquipments(roomId, equipmentIds = []) {
+        if (!Array.isArray(equipmentIds) || equipmentIds.length === 0) {
+            return;
+        }
+        const connection = await super.getConnection();
+        try {
+            const sql = 'INSERT INTO salle_equipements (salle_id, equipement_id) VALUES (?, ?)';
+            for (const equipId of equipmentIds) {
+                await connection.execute(sql, [roomId, equipId]);
+            }
+        } finally {
+            connection.release();
+        }
+    }
+
+    // Supprime tous les équipements d'une salle
+    static async unlinkEquipments(roomId) {
+        const sql = 'DELETE FROM salle_equipements WHERE salle_id = ?';
+        await db.execute(sql, [roomId]);
+    }
+
+    // Supprime une salle complètement (photos et équipements inclus, gérés par les contraintes FK)
+    static async delete(id) {
+        const [result] = await db.execute('DELETE FROM salles WHERE id = ?', [id]);
+        return result.affectedRows > 0;
+    }
 }
 
 module.exports = Room;
