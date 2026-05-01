@@ -1,10 +1,14 @@
+// Services pour les équipements.
+// Contiennent la logique métier et lèvent des AppError en cas d'anomalie.
 const Equipement = require('../models/Equipements');
 const AppError = require('../utils/AppError');
 
+// Retourne la liste de tous les équipements (promise)
 const getAllEquipements = async () => {
     return Equipement.findAll();
 };
 
+// Récupère un équipement, lance AppError(404) si introuvable
 const getEquipementById = async (id) => {
     const equipement = await Equipement.findById(id);
 
@@ -15,10 +19,12 @@ const getEquipementById = async (id) => {
     return equipement;
 };
 
+// Crée un nouvel équipement
 const createEquipement = async (data) => {
     return Equipement.create(data);
 };
 
+// Met à jour un équipement, lève 404 si l'id n'existe pas
 const updateEquipement = async (id, data) => {
     const updated = await Equipement.update(id, data);
 
@@ -27,6 +33,7 @@ const updateEquipement = async (id, data) => {
     }
 };
 
+// Supprime un équipement
 const deleteEquipement = async (id) => {
     const deleted = await Equipement.delete(id);
 

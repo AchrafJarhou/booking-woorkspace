@@ -32,6 +32,10 @@ app.use('/api/equipements', equipementRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
+// Note: le middleware 'notFoundHandler' doit être monté APRES toutes les routes
+// afin de capturer les chemins non définis. Le middleware 'errorHandler' est
+// le dernier pour uniformiser les réponses d'erreur.
+
 
 // --- LANCEMENT ---
 const PORT = process.env.PORT || 3000;

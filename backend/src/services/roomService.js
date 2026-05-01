@@ -1,10 +1,14 @@
+// Services pour les salles: centralisent la logique de lecture/écriture
+// (jointures, transactions, composition d'objet pour les controllers)
 const Room = require('../models/Room');
 const AppError = require('../utils/AppError');
 
+// Récupère toutes les salles (avec le nom du type)
 const getAllRooms = async () => {
     return Room.getAll();
 };
 
+// Récupère une salle et assemble la galerie + équipements
 const getRoomDetails = async (id) => {
     const room = await Room.getById(id);
 
@@ -24,6 +28,8 @@ const getRoomDetails = async (id) => {
     };
 };
 
+// Crée une salle en transaction (le model gère la transaction)
+// photos: tableau d'URLs (optionnel) qui sera inséré dans salle_photos
 const createRoom = async (data) => {
     const { photos, ...roomData } = data;
     const safePhotos = Array.isArray(photos) ? photos : [];
