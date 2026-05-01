@@ -4,12 +4,18 @@ const { body } = require('express-validator');
 const validateCreateRoom = [
     body('nom').notEmpty().withMessage('Le nom est obligatoire'),
     body('type_id').isInt().withMessage("Le type_id doit être un entier"),
-    body('capacite').optional().isInt({ min: 1 }).withMessage('La capacité doit être un entier positif'),
+    body('statut').notEmpty().withMessage('Le statut est obligatoire'),
+    body('adresse').notEmpty().withMessage('L\'adresse est obligatoire'),
+    body('code_postal').notEmpty().withMessage('Le code postal est obligatoire'),
+    body('ville').notEmpty().withMessage('La ville est obligatoire'),
+    body('capacite').isInt({ min: 1 }).withMessage('La capacité doit être un entier positif'),
+    body('description').notEmpty().withMessage('La description est obligatoire'),
     body('latitude').notEmpty().withMessage('La latitude est obligatoire').isFloat({ min: -90, max: 90 }).withMessage('Latitude invalide (entre -90 et 90)'),
     body('longitude').notEmpty().withMessage('La longitude est obligatoire').isFloat({ min: -180, max: 180 }).withMessage('Longitude invalide (entre -180 et 180)'),
-    body('prix_heure').optional().isFloat().withMessage('prix_heure doit être un nombre'),
-    body('prix_demi_journee').optional().isFloat().withMessage('prix_demi_journee doit être un nombre'),
-    body('prix_journee').optional().isFloat().withMessage('prix_journee doit être un nombre')
+    body('prix_heure').isFloat({ min: 0 }).withMessage('prix_heure doit être un nombre positif'),
+    body('prix_demi_journee').isFloat({ min: 0 }).withMessage('prix_demi_journee doit être un nombre positif'),
+    body('prix_journee').isFloat({ min: 0 }).withMessage('prix_journee doit être un nombre positif'),
+    body('image_principale').notEmpty().withMessage('L\'image principale est obligatoire')
 ];
 
 // Validations pour la mise à jour d'une salle (champs optionnels mais validés si fournis)
