@@ -35,6 +35,13 @@ class User extends BaseModel {
         }
     }
 
+    // Récupérer un utilisateur par email
+    static async findByEmail(email) {
+        const sql = 'SELECT * FROM utilisateurs WHERE email = ?';
+        const [rows] = await db.execute(sql, [email]);
+        return rows[0];
+    }
+
     //modification d'un utilisateur
     static async update(id, data) {
         const connection = await super.getConnection();

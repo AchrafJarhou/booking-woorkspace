@@ -7,6 +7,7 @@ const roomRoutes = require('./routes/roomRoutes');
 const userRoutes = require('./routes/userRoutes');
 const typeRoutes = require('./routes/typeRoutes');
 const equipementRoutes = require('./routes/equipementRoutes');
+const authRoutes = require('./routes/authRoutes');
 const { notFoundHandler, errorHandler } = require('./middlewares/errorHandler');
 
 const app = express();
@@ -23,7 +24,10 @@ app.get('/', (req, res) => {
 });
 
 // 2. Utilisation des routes spécialisées
-// Toutes les routes définies dans roomRoutes commenceront par /api/rooms
+// Routes d'authentification (publiques)
+app.use('/api/auth', authRoutes);
+
+// Routes protégées par authentification et rôles
 app.use('/api/rooms', roomRoutes);
 app.use('/api/users', userRoutes); 
 app.use('/api/types', typeRoutes);
