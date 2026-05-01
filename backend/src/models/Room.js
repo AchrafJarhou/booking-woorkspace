@@ -82,6 +82,34 @@ class Room extends BaseModel {
         const [rows] = await db.execute(sql, [roomId]);
         return rows;
     }
+
+    // Mise à jour d'une salle (champs optionnels)
+    static async update(id, data) {
+        const connection = await super.getConnection();
+        try {
+            const allowedFields = ['nom', 'statut', 'adresse', 'code_postal', 'ville', 'latitude', 'longitude', 'capacite', 'description', 'prix_heure', 'prix_demi_journee', 'prix_journee', 'image_principale', 'type_id'];
+            const updates = [];
+            const values = [];
+
+            for (const field of allowedFields) {
+                if (data[field] !== undefined) {
+                    updates.push(`${field} = ?`);
+                    values.push(data[field]);
+                }
+            }
+
+            if (updates.length === 0) {
+                return false;
+            }
+
+            values.push(id);
+            const sql = `UPDATE salles SET ${updates.join(', ')} WHERE id = ?`;
+            const [result] = await connection.execute(sql, values);
+            return result.affectedRows > 0;
+        } finally {
+            connection.release();
+        }
+    }
 }
 
 module.exports = Room;

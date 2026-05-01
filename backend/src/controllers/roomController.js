@@ -31,15 +31,16 @@ const createRoom = asyncHandler(async (req, res) => {
 });
 
 // PUT /api/rooms/:id
-// Met à jour une salle. Pour l'instant on réutilise createRoom->service create,
-// mais on doit ajouter Room.update dans le modèle pour supporter la MAJ réelle.
+// Met à jour une salle existante
 const updateRoom = asyncHandler(async (req, res) => {
-    // TODO: implémenter Room.update et appeler roomService.updateRoom
-    res.status(501).json({ message: 'Not implemented: updateRoom' });
+    const { id } = req.params;
+    await roomService.updateRoom(id, req.body);
+    res.status(200).json({ message: 'Salle mise a jour avec succes' });
 });
 
 module.exports = {
     getAllRooms,
     getRoomDetails,
-    createRoom
+    createRoom,
+    updateRoom
 };

@@ -43,8 +43,18 @@ const createRoom = async (data) => {
     };
 };
 
+// Met à jour une salle existante
+const updateRoom = async (id, data) => {
+    const updated = await Room.update(id, data);
+
+    if (!updated) {
+        throw new AppError('Salle introuvable', 404);
+    }
+};
+
 module.exports = {
     getAllRooms,
     getRoomDetails,
-    createRoom
+    createRoom,
+    updateRoom
 };

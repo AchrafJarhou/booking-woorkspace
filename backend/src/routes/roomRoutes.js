@@ -18,6 +18,6 @@ router.post('/', validateCreateRoom, validateRequest, roomController.createRoom)
 
 // Route pour mettre à jour une salle
 // URL : PUT http://localhost:3000/api/rooms/:id
-router.put('/:id', validateUpdateRoom, validateRequest, roomController.createRoom);
+router.put('/:id', validateUpdateRoom, validateRequest, roomController.updateRoom);
 
 module.exports = router;
