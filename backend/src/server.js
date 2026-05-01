@@ -9,6 +9,7 @@ const typeRoutes = require('./routes/typeRoutes');
 const equipementRoutes = require('./routes/equipementRoutes');
 const authRoutes = require('./routes/authRoutes');
 const reservationRoutes = require('./routes/reservationRoutes');
+const calendarRoutes = require('./routes/calendarRoutes');
 const { notFoundHandler, errorHandler } = require('./middlewares/errorHandler');
 
 const app = express();
@@ -34,6 +35,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/types', typeRoutes);
 app.use('/api/equipements', equipementRoutes);
 app.use('/api/reservations', reservationRoutes);
+app.use('/api/calendar', calendarRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
