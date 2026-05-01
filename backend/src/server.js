@@ -8,6 +8,7 @@ const userRoutes = require('./routes/userRoutes');
 const typeRoutes = require('./routes/typeRoutes');
 const equipementRoutes = require('./routes/equipementRoutes');
 const authRoutes = require('./routes/authRoutes');
+const reservationRoutes = require('./routes/reservationRoutes');
 const { notFoundHandler, errorHandler } = require('./middlewares/errorHandler');
 
 const app = express();
@@ -32,6 +33,7 @@ app.use('/api/rooms', roomRoutes);
 app.use('/api/users', userRoutes); 
 app.use('/api/types', typeRoutes);
 app.use('/api/equipements', equipementRoutes);
+app.use('/api/reservations', reservationRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
