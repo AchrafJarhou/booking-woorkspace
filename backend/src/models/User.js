@@ -2,6 +2,7 @@ const BaseModel = require('./BaseModel');
 const db = require('../config/db');
 
 class User extends BaseModel {
+    static table = 'utilisateurs'; // On dit à la classe mère qu'on gère la table 'utilisateurs'
    
 
     constructor(data) {
