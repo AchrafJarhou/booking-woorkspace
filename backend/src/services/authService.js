@@ -1,11 +1,16 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 const User = require('../models/User');
 const AppError = require('../utils/AppError');
 
 // Crée et envoie un JWT
 const generateToken = (userId, email, role) => {
-    return jwt.sign({ userId, email, role }, process.env.JWT_SECRET || 'secret-key', {
+    if (!process.env.JWT_SECRET) {
+        throw new AppError('JWT_SECRET non configuré', 500);
+    }
+    return jwt.sign({ userId, email, role }, process.env.JWT_SECRET, {
         expiresIn: '7d'
     });
 };
@@ -73,8 +78,11 @@ const login = async (data) => {
 
 // Vérifier et décoder un JWT
 const verifyToken = (token) => {
+    if (!process.env.JWT_SECRET) {
+        throw new AppError('JWT_SECRET non configuré', 500);
+    }
     try {
-        return jwt.verify(token, process.env.JWT_SECRET || 'secret-key');
+        return jwt.verify(token, process.env.JWT_SECRET);
     } catch (err) {
         throw new AppError('Token invalide ou expiré', 401);
     }
