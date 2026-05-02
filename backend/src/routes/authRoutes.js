@@ -17,4 +17,8 @@ router.post('/login', validateLogin, validateRequest, authController.login);
 // Récupère le profil de l'utilisateur connecté
 router.get('/me', authRequired, authController.me);
 
+// POST /api/auth/logout
+// Déconnexion: supprime le cookie token
+router.post('/logout', authRequired, authController.logout);
+
 module.exports = router;

@@ -48,8 +48,20 @@ const me = asyncHandler(async (req, res) => {
     });
 });
 
+// POST /api/auth/logout
+// Déconnecte l'utilisateur en supprimant le cookie HttpOnly
+const logout = asyncHandler(async (req, res) => {
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+    });
+    res.status(204).send();
+});
+
 module.exports = {
     register,
     login,
     me
+    ,logout
 };
