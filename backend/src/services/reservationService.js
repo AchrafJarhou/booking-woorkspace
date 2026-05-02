@@ -5,10 +5,17 @@ const Room = require('../models/Room');
 const AppError = require('../utils/AppError');
 
 // Calcule le prix total selon le type de réservation
-const calculatePrice = (room, typeReservation) => {
+const calculatePrice = (room, typeReservation, heureDebut, heureFin) => {
     switch (typeReservation) {
-        case 'heure':
-            return room.prix_heure || 0;
+        case 'heure': {
+            const [startHour, startMinute] = heureDebut.split(':').map(Number);
+            const [endHour, endMinute] = heureFin.split(':').map(Number);
+            const startInMinutes = (startHour * 60) + startMinute;
+            const endInMinutes = (endHour * 60) + endMinute;
+            const durationInHours = (endInMinutes - startInMinutes) / 60;
+
+            return (room.prix_heure || 0) * durationInHours;
+        }
         case 'demi-journee':
             return room.prix_demi_journee || 0;
         case 'journee':
@@ -54,7 +61,7 @@ const createReservation = async (data, userId) => {
     }
 
     // Calculer le prix total
-    const prix_total = calculatePrice(room, type_reservation);
+    const prix_total = calculatePrice(room, type_reservation, heure_debut, heure_fin);
 
     // Créer la réservation
     const reservationId = await Reservation.create({
