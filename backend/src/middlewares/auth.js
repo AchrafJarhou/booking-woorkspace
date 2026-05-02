@@ -4,13 +4,21 @@ const AppError = require('../utils/AppError');
 
 // Middleware pour vérifier si l'utilisateur est authentifié
 const authRequired = (req, res, next) => {
-    const authHeader = req.headers.authorization;
+    // Priorité: token stocké en HttpOnly cookie (nom: "token").
+    // Fallback: Authorization header Bearer <token> pour compatibilité.
+    const tokenFromCookie = req.cookies && req.cookies.token;
+    let token = tokenFromCookie || null;
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return next(new AppError('Token manquant ou invalide', 401));
+    if (!token) {
+        const authHeader = req.headers.authorization;
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            token = authHeader.substring(7);
+        }
     }
 
-    const token = authHeader.substring(7); // Enlever "Bearer "
+    if (!token) {
+        return next(new AppError('Token manquant ou invalide', 401));
+    }
 
     try {
         const decoded = authService.verifyToken(token);
