@@ -6,14 +6,35 @@ const asyncHandler = require('../utils/asyncHandler');
 // Inscription d'un nouvel utilisateur
 const register = asyncHandler(async (req, res) => {
     const result = await authService.register(req.body);
-    res.status(201).json(result);
+    // Pas de token à l'inscription
+    res.status(201).json({
+        userId: result.userId,
+        email: result.email,
+        nom: result.nom,
+        role: result.role
+    });
 });
 
 // POST /api/auth/login
 // Connexion d'un utilisateur
 const login = asyncHandler(async (req, res) => {
     const result = await authService.login(req.body);
-    res.status(200).json(result);
+    
+    // Envoyer le token en HttpOnly Cookie
+    res.cookie('token', result.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000  // 7 jours
+    });
+    
+    // Retourner user sans le token
+    res.status(200).json({
+        userId: result.userId,
+        email: result.email,
+        nom: result.nom,
+        role: result.role
+    });
 });
 
 // GET /api/auth/me

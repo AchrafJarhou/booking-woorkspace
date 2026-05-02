@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
 // 1. Importation des routes (on les créera juste après)
 const roomRoutes = require('./routes/roomRoutes');
@@ -15,8 +16,9 @@ const { notFoundHandler, errorHandler } = require('./middlewares/errorHandler');
 const app = express();
 
 // --- MIDDLEWARES ---
-app.use(cors());
-app.use(express.json()); 
+app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
+app.use(express.json());
+app.use(cookieParser()); 
 
 // --- ROUTES ---
 
